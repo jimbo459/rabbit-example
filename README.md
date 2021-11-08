@@ -13,7 +13,7 @@ Santa is only interested in requests from `good` children, so he will create a q
 
 You will need the following pre-requisites to run this:
 
-* RabbitMq server running and listening on default port: ####
+* RabbitMq server running and listening on default port: 5672
 * Ginkgo
 * Go 1.17
 

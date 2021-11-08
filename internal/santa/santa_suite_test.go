@@ -17,3 +17,9 @@ func TestSanta(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Santa Suite")
 }
+
+// TODO: cleanup
+//var _ = AfterSuite(func() {
+//	err = cleanUpTestArtifacts()
+//	Expect(err).NotTo(HaveOccurred())
+//})
