@@ -14,8 +14,6 @@ type letter struct {
 }
 
 func Producer(w http.ResponseWriter, req *http.Request) {
-	w.WriteHeader(http.StatusCreated)
-
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
 	FailOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
@@ -27,9 +25,9 @@ func Producer(w http.ResponseWriter, req *http.Request) {
 	var childLetter letter
 	err = json.NewDecoder(req.Body).Decode(&childLetter)
 	if err != nil {
-		w.WriteHeader(http.StatusCreated)
+		http.Error(w, "Request body invalid", http.StatusBadRequest)
+		return
 	}
-	FailOnError(err, "Could not decode child's letter")
 
 	err = ch.Publish(
 		"northPole",           // exchange
@@ -41,6 +39,8 @@ func Producer(w http.ResponseWriter, req *http.Request) {
 			Body:        []byte(childLetter.Request),
 		})
 	FailOnError(err, "Failed to publish a message")
+
+	w.WriteHeader(http.StatusCreated)
 
 	fmt.Fprintf(w, "Posted letter to santa")
 }

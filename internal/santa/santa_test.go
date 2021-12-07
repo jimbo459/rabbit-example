@@ -26,7 +26,6 @@ var _ = Describe("Santa", func() {
 		It("returns the letter request", func() {
 			Expect(resp.Body.String()).To(Equal("Letter received: A toy"))
 		})
-
 	})
 
 	Context("A bad child sends a valid request", func() {
@@ -85,6 +84,16 @@ func setupQueueWithRoutingKey(key string) error {
 		return err
 	}
 
+	err = ch.QueueBind(
+		"santasWorkshop", // queue name
+		"good",           // routing key
+		"northPole",      // exchange
+		false,
+		nil)
+	if err != nil {
+		return err
+	}
+
 	err = ch.Publish(
 		"northPole", // exchange
 		key,         // routing key
@@ -97,26 +106,6 @@ func setupQueueWithRoutingKey(key string) error {
 	if err != nil {
 		return err
 	}
-
-	ch.Close()
-	conn.Close()
-
-	return nil
-}
-
-func cleanUpTestArtifacts() error {
-	conn, err = amqp.Dial("amqp://guest:guest@localhost:5672/")
-	if err != nil {
-		return err
-	}
-
-	ch, err = conn.Channel()
-	if err != nil {
-		return err
-	}
-
-	ch.QueueDelete("santasWorkshop", false, false, false)
-	ch.ExchangeDelete("northPole", false, false)
 
 	ch.Close()
 	conn.Close()

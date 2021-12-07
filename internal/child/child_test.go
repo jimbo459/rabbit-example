@@ -40,7 +40,7 @@ var _ = Describe("Child", func() {
 		Expect(err).NotTo(HaveOccurred())
 	})
 
-	Context("A child sends a valid request", func() {
+	Context("A good child sends a valid request", func() {
 		It("should work", func() {
 			var jsonStr = []byte(`{"behaviour":"good", "request":"A toy"}`)
 			req, err := http.NewRequest("POST", "/child", bytes.NewBuffer(jsonStr))
@@ -57,9 +57,38 @@ var _ = Describe("Child", func() {
 
 	})
 
-	AfterEach(func() {
-		ch.QueuePurge("santasWorkshop", false)
-		ch.Close()
-		conn.Close()
+	Context("A bad child sends a valid request", func() {
+		It("should work", func() {
+			var jsonStr = []byte(`{"behaviour":"bad", "request":"A toy"}`)
+			req, err := http.NewRequest("POST", "/child", bytes.NewBuffer(jsonStr))
+			Expect(err).NotTo(HaveOccurred())
+
+			resp := httptest.NewRecorder()
+			handler := http.HandlerFunc(child.Producer)
+
+			handler.ServeHTTP(resp, req)
+
+			Expect(resp.Code).To(Equal(http.StatusCreated))
+			Expect(resp.Body.String()).To(Equal("Posted letter to santa"))
+		})
+
 	})
+
+	Context("A child sends an invalid request", func() {
+		It("should work", func() {
+			var jsonStr = []byte(`{"behaviour", "request":"A toy"}`)
+			req, err := http.NewRequest("POST", "/child", bytes.NewBuffer(jsonStr))
+			Expect(err).NotTo(HaveOccurred())
+
+			resp := httptest.NewRecorder()
+			handler := http.HandlerFunc(child.Producer)
+
+			handler.ServeHTTP(resp, req)
+
+			Expect(resp.Code).To(Equal(http.StatusBadRequest))
+			Expect(resp.Body.String()).To(Equal("Request body invalid\n"))
+		})
+
+	})
+
 })

@@ -4,6 +4,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/streadway/amqp"
+	"rabbittest/internal/helpers"
 	"testing"
 )
 
@@ -18,8 +19,7 @@ func TestSanta(t *testing.T) {
 	RunSpecs(t, "Santa Suite")
 }
 
-// TODO: cleanup
-//var _ = AfterSuite(func() {
-//	err = cleanUpTestArtifacts()
-//	Expect(err).NotTo(HaveOccurred())
-//})
+var _ = AfterSuite(func() {
+	err = helpers.CleanUpTestArtifacts()
+	Expect(err).NotTo(HaveOccurred())
+})

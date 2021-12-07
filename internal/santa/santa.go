@@ -16,14 +16,6 @@ func Consumer(w http.ResponseWriter, req *http.Request) {
 	FailOnError(err, "Failed to open a channel")
 	defer ch.Close()
 
-	err = ch.QueueBind(
-		"santasWorkshop", // queue name
-		"good",           // routing key
-		"northPole",      // exchange
-		false,
-		nil)
-	FailOnError(err, "Failed to bind a queue - santa")
-
 	msgs, err := ch.Consume(
 		"santasWorkshop", // queue
 		"",               // consumer

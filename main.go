@@ -39,6 +39,14 @@ func main() {
 	)
 	FailOnError(err, "Failed to declare a queue")
 
+	err = ch.QueueBind(
+		"santasWorkshop", // queue name
+		"good",           // routing key
+		"northPole",      // exchange
+		false,
+		nil)
+	FailOnError(err, "Failed to bind a queue")
+
 	http.HandleFunc("/child", child.Producer)
 	http.HandleFunc("/santa", santa.Consumer)
 
